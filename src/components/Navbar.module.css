@@ -1,0 +1,211 @@
+.navbar {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 4rem;
+    padding: 1rem 2rem;
+    background: rgba(10, 10, 10, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+    z-index: 100;
+    transition: all 0.3s ease;
+    align-items: center;
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--neon-pink);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-right: 1rem;
+}
+
+.links {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+}
+
+.link {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: color 0.3s ease;
+    position: relative;
+}
+
+.link:hover {
+    color: var(--neon-cyan);
+}
+
+.link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: var(--neon-cyan);
+    transition: width 0.3s ease;
+}
+
+.link:hover::after {
+    width: 100%;
+}
+
+/* 3D Animation for Black Market */
+.nav3D {
+    display: inline-block;
+    /* Crucial for transform */
+    color: var(--neon-pink) !important;
+    text-shadow: 0 0 5px var(--neon-pink);
+    animation: neonPulse 1.5s infinite alternate;
+    transform: perspective(500px) translate3d(0, 0, 0);
+    /* Active perspective */
+}
+
+.nav3D:hover {
+    animation: glitch3D 0.3s infinite;
+    text-shadow: 2px 2px var(--neon-cyan), -2px -2px var(--neon-purple);
+}
+
+@keyframes neonPulse {
+    from {
+        text-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink);
+    }
+
+    to {
+        text-shadow: 0 0 20px var(--neon-pink), 0 0 30px var(--neon-pink);
+    }
+}
+
+@keyframes glitch3D {
+    0% {
+        transform: perspective(500px) translate3d(0, 0, 0) rotateX(0deg);
+    }
+
+    20% {
+        transform: perspective(500px) translate3d(-3px, 3px, 0) rotateX(10deg);
+    }
+
+    40% {
+        transform: perspective(500px) translate3d(-3px, -3px, 0) rotateX(-10deg);
+    }
+
+    60% {
+        transform: perspective(500px) translate3d(3px, 3px, 0) rotateX(10deg);
+    }
+
+    80% {
+        transform: perspective(500px) translate3d(3px, -3px, 0) rotateX(-10deg);
+    }
+
+    100% {
+        transform: perspective(500px) translate3d(0, 0, 0) rotateX(0deg);
+    }
+}
+
+/* Mobile Menu Styles */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 2rem;
+    height: 2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 200;
+}
+
+.bar {
+    width: 2rem;
+    height: 0.25rem;
+    background: var(--neon-cyan);
+    border-radius: 10px;
+    transition: all 0.3s linear;
+    position: relative;
+    transform-origin: 1px;
+}
+
+.mobileMenu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(5, 5, 5, 0.98);
+    backdrop-filter: blur(20px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    z-index: 150;
+    overflow: hidden;
+}
+
+.closeButton {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    background: transparent;
+    border: none;
+    color: var(--neon-cyan);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 255, 242, 0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.closeButton:hover {
+    background: rgba(0, 255, 242, 0.1);
+    box-shadow: 0 0 15px var(--neon-cyan);
+    transform: rotate(90deg);
+}
+
+.mobileLink {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    text-decoration: none;
+    letter-spacing: 4px;
+    position: relative;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.mobileLink:hover {
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan);
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .navbar {
+        width: 90%;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+    }
+
+    .links {
+        display: none;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+}

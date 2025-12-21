@@ -1,0 +1,282 @@
+.contact {
+    position: relative;
+    padding: 10rem 2rem 4rem;
+    background-color: var(--bg-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
+
+.backgroundText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20vw;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 0.02);
+    z-index: 0;
+    pointer-events: none;
+    font-family: var(--font-heading);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 5rem;
+    z-index: 1;
+}
+
+.tag {
+    font-family: var(--font-heading);
+    color: var(--neon-pink);
+    font-size: 0.8rem;
+    letter-spacing: 0.4rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 5vw, 4rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+    color: white;
+}
+
+.board {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    width: 100%;
+    max-width: 900px;
+    z-index: 1;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
+}
+
+.boardHeader {
+    padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.dots {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--glass-border);
+}
+
+.boardTitle {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    letter-spacing: 0.2rem;
+    color: var(--text-muted);
+}
+
+.form {
+    padding: 3rem;
+}
+
+.formRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+}
+
+.label {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    color: var(--neon-cyan);
+    letter-spacing: 0.1rem;
+}
+
+.input,
+.textarea {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    padding: 1.2rem;
+    color: white;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    transition: all 0.3s var(--ease-standard);
+}
+
+.input:focus,
+.textarea:focus {
+    outline: none;
+    border-color: var(--neon-pink);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.textarea {
+    min-height: 180px;
+    resize: none;
+}
+
+.actionRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.disclaimer {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.neonText {
+    color: var(--neon-cyan);
+}
+
+.submitBtn {
+    position: relative;
+    background: white;
+    color: black;
+    border: none;
+    padding: 1.2rem 3rem;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s var(--ease-standard);
+}
+
+.btnText {
+    position: relative;
+    z-index: 2;
+}
+
+.btnGlow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: var(--neon-pink);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s var(--ease-standard), height 0.6s var(--ease-standard);
+    z-index: 1;
+}
+
+.submitBtn:hover .btnGlow {
+    width: 300px;
+    height: 300px;
+}
+
+.submitBtn:hover .btnText {
+    color: white;
+}
+
+.footer {
+    margin-top: auto;
+    width: 100%;
+    max-width: 1400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    padding-top: 4rem;
+    z-index: 1;
+}
+
+.footerLine {
+    width: 100%;
+    height: 1px;
+    background: var(--glass-border);
+}
+
+.footer p {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-family: var(--font-heading);
+    letter-spacing: 0.2rem;
+}
+
+.socials {
+    display: flex;
+    gap: 3rem;
+}
+
+.socialLink {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    letter-spacing: 0.2rem;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+}
+
+.socialLink:hover {
+    color: var(--neon-cyan);
+}
+
+@media (max-width: 768px) {
+    .contact {
+        padding: 6rem 1rem 3rem;
+    }
+
+    .header {
+        margin-bottom: 3rem;
+    }
+
+    .title {
+        font-size: 2rem;
+    }
+
+    .board {
+        box-shadow: none;
+    }
+
+    .boardHeader {
+        padding: 0.8rem 1.2rem;
+        gap: 1rem;
+    }
+
+    .form {
+        padding: 1.5rem;
+    }
+
+    .formRow {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .actionRow {
+        flex-direction: column;
+        gap: 1.5rem;
+        text-align: center;
+    }
+
+    .submitBtn {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .socials {
+        gap: 1.5rem;
+    }
+}
