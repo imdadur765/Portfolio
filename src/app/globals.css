@@ -55,12 +55,21 @@ a {
 }
 
 .gradient-flow {
-  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple), var(--neon-cyan));
-  background-size: 300% auto;
+  background:
+    linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  z-index: -1;
+  pointer-events: none;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
   animation: gradient 5s linear infinite;
+}
+
+section {
+  content-visibility: auto;
+  contain-intrinsic-size: 100vh;
 }
 
 @keyframes gradient-flow {
@@ -146,4 +155,39 @@ a {
 
 .magnetic-wrap {
   display: inline-block;
+}
+
+/* Reduced Motion Support - Respects OS accessibility settings */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .noise-overlay {
+    display: none !important;
+  }
+}
+
+/* Performance Mode - User toggled */
+body.performance-mode {
+  scroll-behavior: auto !important;
+}
+
+body.performance-mode .noise-overlay {
+  display: none !important;
+}
+
+body.performance-mode * {
+  animation-play-state: paused !important;
+}
+
+/* Allow specific non-disruptive animations even in performance mode */
+body.performance-mode .allow-animation {
+  animation-play-state: running !important;
 }

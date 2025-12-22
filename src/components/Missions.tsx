@@ -1,91 +1,33 @@
 "use client";
 
 import styles from './Missions.module.css';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { motion } from 'framer-motion';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const projects = [
-    {
-        id: 1,
-        title: "Audio X",
-        category: "MOBILE APP",
-        description: "A premium local music player with dynamic glassmorphism and real-time lyrics synchronization.",
-        tags: ["Flutter", "Firebase", "BLOC"],
-        image: "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=800"
-    },
-    {
-        id: 2,
-        title: "Neon Market",
-        category: "E-COMMERCE",
-        description: "High-end marketplace featuring 3D product previews and a sleek, futuristic checkout experience.",
-        tags: ["Next.js", "Three.js", "Stripe"],
-        image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800"
-    },
-    {
-        id: 3,
-        title: "Cyber Vision",
-        category: "SAAS PLATFORM",
-        description: "AI-driven analytics dashboard for security systems, featuring real-time data streaming.",
-        tags: ["React", "Python", "WebSockets"],
-        image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=800"
-    }
-];
-
 export default function Missions() {
     const sectionRef = useRef(null);
-    const cardsRef = useRef<HTMLDivElement[]>([]);
+    const cardRef = useRef<HTMLDivElement>(null);
+    const [showInstructions, setShowInstructions] = useState(false);
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            const cards = gsap.utils.toArray(cardsRef.current);
-
-            cards.forEach((card: any) => {
-                gsap.from(card, {
-                    y: 100,
+            if (cardRef.current) {
+                gsap.from(cardRef.current, {
+                    y: 80,
                     opacity: 0,
-                    duration: 1.2,
-                    ease: "power4.out",
+                    duration: 0.8,
+                    ease: "power3.out",
+                    lazy: true,
+                    force3D: true,
                     scrollTrigger: {
-                        trigger: card,
+                        trigger: cardRef.current,
                         start: "top 90%",
                     }
                 });
-
-                // 3D Tilt Effect
-                card.addEventListener('mousemove', (e: MouseEvent) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
-
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-
-                    const rotateX = (y - centerY) / 10;
-                    const rotateY = (centerX - x) / 10;
-
-                    gsap.to(card, {
-                        rotateX: rotateX,
-                        rotateY: rotateY,
-                        scale: 1.05,
-                        duration: 0.5,
-                        ease: "power3.out"
-                    });
-                });
-
-                card.addEventListener('mouseleave', () => {
-                    gsap.to(card, {
-                        rotateX: 0,
-                        rotateY: 0,
-                        scale: 1,
-                        duration: 0.5,
-                        ease: "power3.out"
-                    });
-                });
-            });
+            }
         }, sectionRef);
 
         return () => ctx.revert();
@@ -99,40 +41,96 @@ export default function Missions() {
                     <h2 className={styles.title}>FIELD OPERATIONS</h2>
                 </div>
 
-                <div className={styles.grid}>
-                    {projects.map((project, i) => (
-                        <div
-                            key={project.id}
-                            ref={(el) => { if (el) cardsRef.current[i] = el; }}
-                            className={styles.cardWrapper}
-                        >
-                            <div className={styles.card}>
-                                <div className={styles.imageWrapper}>
-                                    <img src={project.image} alt={project.title} className={styles.cardImage} />
-                                    <div className={styles.imageOverlay} />
-                                    <span className={styles.projectNumber}>OBJ_{project.id}</span>
-                                </div>
-                                <div className={styles.content}>
-                                    <span className={styles.category}>{project.category}</span>
-                                    <h3 className={styles.projectTitle}>{project.title}</h3>
-                                    <p className={styles.description}>{project.description}</p>
-                                    <div className={styles.tags}>
-                                        {project.tags.map(tag => (
-                                            <span key={tag} className={styles.tagItem}>{tag}</span>
-                                        ))}
-                                    </div>
-                                    <button className={styles.viewBtn}>
-                                        <span>ESTABLISH LINK</span>
-                                        <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M8.14645 3.14645C8.34171 2.95118 8.65829 2.95118 8.85355 3.14645L12.8536 7.14645C13.0488 7.34171 13.0488 7.65829 12.8536 7.85355L8.85355 11.8536C8.65829 12.0488 8.34171 12.0488 8.14645 11.8536C7.95118 11.6583 7.95118 11.3417 8.14645 11.1464L11.2929 8H2.5C2.22386 8 2 7.77614 2 7.5C2 7.22386 2.22386 7 2.5 7H11.2929L8.14645 3.85355C7.95118 3.65829 7.95118 3.34171 8.14645 3.14645Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path>
-                                        </svg>
-                                    </button>
-                                </div>
+                {/* Audio X - Main Project Card */}
+                <div className={styles.featuredCard} ref={cardRef}>
+                    <div className={styles.featuredImageWrapper}>
+                        <img
+                            src="/audio-x-logo.png"
+                            alt="Audio X"
+                            className={styles.featuredImage}
+                            loading="lazy"
+                        />
+                        <div className={styles.featuredBadge}>LIVE PROJECT</div>
+                    </div>
+
+                    <div className={styles.featuredContent}>
+                        <div className={styles.trustWarning}>
+                            <p className={styles.subtitle}>// PROTOCOL: ARCHITECT_VERIFIED</p>
+                            <div className={styles.boldMessage}>
+                                CURATED TOOLS FOR THE MODERN DEVELOPER.
+                                <br />
+                                DOWNLOAD ONLY IF YOU TURST THE WORK BEHIND IT <span>IF YOU&apos;RE UNSURE IT&apos;S OKAY TO SKIP.</span>
                             </div>
                         </div>
-                    ))}
+                        <span className={styles.category}>📱 MOBILE APP</span>
+                        <h3 className={styles.featuredTitle}>Audio X</h3>
+                        <p className={styles.featuredDesc}>
+                            A premium local music player with dynamic glassmorphism UI,
+                            real-time lyrics synchronization, and an immersive listening experience.
+                            Built with Flutter for blazing-fast performance.
+                        </p>
+
+                        <div className={styles.features}>
+                            <span className={styles.feature}>🎵 Offline Playback</span>
+                            <span className={styles.feature}>📝 Synced Lyrics</span>
+                            <span className={styles.feature}>🎨 Glass UI</span>
+                            <span className={styles.feature}>🌙 Theme Modes</span>
+                        </div>
+
+                        <div className={styles.tags}>
+                            <span className={styles.tagItem}>Flutter</span>
+                            <span className={styles.tagItem}>Dart</span>
+                            <span className={styles.tagItem}>Firebase</span>
+                            <span className={styles.tagItem}>BLOC</span>
+                        </div>
+
+                        <div className={styles.actionButtons}>
+                            <a href="/apks/audio-x-arm64-v8a.apk" download className={styles.downloadBtn}>
+                                <span>⬇️ DOWNLOAD APK</span>
+                            </a>
+                            <button
+                                className={styles.instructionBtn}
+                                onClick={() => setShowInstructions(!showInstructions)}
+                            >
+                                <span>{showInstructions ? '✕ CLOSE' : '❓ INSTALL GUIDE'}</span>
+                            </button>
+                        </div>
+
+                        {/* Installation Instructions */}
+                        {showInstructions && (
+                            <div className={styles.instructions}>
+                                <h4>📲 Installation Guide</h4>
+                                <div className={styles.warning}>
+                                    ⚠️ <strong>Google Play Protect Warning</strong><br />
+                                    Since this APK is not from Play Store, Google may show a warning.
+                                    This is normal for developer-distributed apps.
+                                </div>
+                                <ol className={styles.steps}>
+                                    <li>Download the APK file using the button above</li>
+                                    <li>Open your Downloads folder and tap the APK file</li>
+                                    <li>If prompted, enable &quot;Install from unknown sources&quot;</li>
+                                    <li>When Google Play Protect shows warning, tap <strong>&quot;More details&quot;</strong></li>
+                                    <li>Then tap <strong>&quot;Install anyway&quot;</strong></li>
+                                    <li>Wait for installation to complete</li>
+                                    <li>Enjoy Audio X! 🎉</li>
+                                </ol>
+                                <p className={styles.note}>
+                                    💡 This app is safe - I built it myself! It&apos;s not on Play Store
+                                    because this is my personal portfolio project.
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Coming Soon Section */}
+                <div className={styles.comingSoon}>
+                    <div className={styles.comingSoonIcon}>🚧</div>
+                    <h3>More Projects Coming Soon</h3>
+                    <p>Currently working on exciting new projects. Stay tuned!</p>
                 </div>
             </div>
         </section>
     );
 }
+

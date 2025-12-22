@@ -10,50 +10,19 @@ const apps = [
         id: 0,
         name: "AUDIO X",
         version: "v1.0.0",
-        desc: "The ultimate high-fidelity auditory interface. Real-time neural lyric synchronization powered by a hyper-optimized Flutter engine for peak arm64-v8a performance.",
+        desc: "A premium local music player with dynamic glassmorphism UI, real-time lyrics synchronization, and an immersive listening experience. Built with Flutter for blazing-fast performance.",
         rarity: "legendary",
         status: "available",
         icon: "/audio-x-logo.png",
         file: "/apks/audio-x-arm64-v8a.apk"
-    },
-    {
-        id: 1,
-        name: "VIDEO X",
-        version: "v0.5-alpha",
-        desc: "Next-gen video manipulation and playback. Currently being optimized.",
-        rarity: "legendary",
-        status: "in-progress",
-        icon: "🎬",
-        file: "#"
-    },
-    {
-        id: 2,
-        name: "HEALTH X",
-        version: "LOCKED",
-        desc: "Track vital signs and neural activity in real-time. Direct interface.",
-        rarity: "epic",
-        status: "locked",
-        icon: "🧬",
-        file: "#"
-    },
-    {
-        id: 3,
-        name: "CYBER-HEIST",
-        version: "LOCKED",
-        desc: "Encrypted data package. Decryption algorithm not yet developed.",
-        rarity: "rare",
-        status: "locked",
-        icon: "🔐",
-        file: "#"
     }
 ];
 
 export default function StorePage() {
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Entrance Animation removed to prevent layout conflicts with 3D effects
     useEffect(() => {
-        // No-op
+        // Entrance animations or other logic
     }, []);
 
     const handleDownload = (appFile: string, appName: string, status: string) => {
@@ -65,9 +34,6 @@ export default function StorePage() {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-
-        // Optional: Keep the alert as a "hacking" feedback
-        alert(`ACCESS GRANTED: ${appName} \nDownloading encrypted package...`);
     };
 
     return (
@@ -76,7 +42,14 @@ export default function StorePage() {
 
             <div className={styles.header}>
                 <h1 className={styles.title}>Black Market</h1>
-                <p className={styles.subtitle}>Acquire Illegal Tech & Software</p>
+                <div className={styles.trustWarning}>
+                    <p className={styles.subtitle}>// PROTOCOL: ARCHITECT_VERIFIED</p>
+                    <div className={styles.boldMessage}>
+                        CURATED TOOLS FOR THE MODERN DEVELOPER.
+                        <br />
+                        DOWNLOAD ONLY IF YOU TURST THE WORK BEHIND IT <span>IF YOU'RE UNSURE IT'S OKAY TO SKIP.</span>
+                    </div>
+                </div>
             </div>
 
             <div className={styles.grid}>
@@ -105,6 +78,22 @@ export default function StorePage() {
                         >
                             {app.status === 'available' ? 'Purchase (Free)' :
                                 app.status === 'in-progress' ? 'In Progress' : 'Locked'}
+                        </button>
+                    </div>
+                ))}
+
+                {/* Placeholders for future tech */}
+                {[1, 2, 3].map((i) => (
+                    <div key={i} className={`${styles.card} ${styles.locked}`}>
+                        <div className={`${styles.rarity} ${styles.epic}`}>
+                            ENCRYPTED
+                        </div>
+                        <div className={styles.iconWrapper}>🔒</div>
+                        <h2 className={styles.appName}>CLASSIFIED</h2>
+                        <span className={styles.appVersion}>LOCKED</span>
+                        <p className={styles.appDesc}>Data fragment corrupted. Decryption required. Estimated arrival: UNKNOWN.</p>
+                        <button className={`${styles.downloadBtn} ${styles.disabled}`} disabled>
+                            LOCKED
                         </button>
                     </div>
                 ))}

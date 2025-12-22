@@ -61,6 +61,18 @@
     pointer-events: none;
     backface-visibility: hidden;
     will-change: transform;
+    transition: transform 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Magnetic container hover effect */
+.titleWrapper:hover .titleLayer {
+    animation: magneticPulse 0.5s ease-out;
+}
+
+@media (max-width: 768px) {
+    .mobileHide {
+        display: none !important;
+    }
 }
 
 .layer1 {
@@ -149,7 +161,7 @@
     color: var(--text-muted);
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
     display: block;
 }
 
@@ -210,9 +222,30 @@
     color: white;
 }
 
+.systemAdvisory {
+    max-width: 550px;
+    margin: 1.5rem auto 0;
+    padding: 1rem 1.5rem;
+    background: rgba(0, 243, 255, 0.03);
+    border-left: 2px solid var(--neon-cyan);
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    text-align: left;
+    backdrop-filter: blur(5px);
+}
+
+.advisoryHeader {
+    color: var(--neon-cyan);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-right: 0.5rem;
+}
+
 .scrollIndicator {
     position: absolute;
-    bottom: 40px;
+    bottom: 5px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -248,5 +281,93 @@
     100% {
         transform: translateY(40px);
         opacity: 0;
+    }
+}
+
+/* Magnetic pulse effect for title on hover - lightweight CSS animation */
+@keyframes magneticPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    30% {
+        transform: scale(1.02) translateY(-2px);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Under Construction Banner */
+.constructionBanner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 1rem 0;
+    padding: 1rem 2rem;
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    border-radius: 8px;
+}
+
+.constructionIcon {
+    font-size: 1.5rem;
+}
+
+.constructionText {
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    color: #ffc107;
+}
+
+.progressBar {
+    width: 200px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #ffc107, var(--neon-pink));
+    border-radius: 3px;
+    animation: progressPulse 2s ease-in-out infinite;
+}
+
+@keyframes progressPulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.progressText {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+    .constructionBanner {
+        padding: 1rem 1.5rem;
+        margin: 1.5rem 0;
+    }
+
+    .constructionText {
+        font-size: 0.7rem;
+    }
+
+    .progressBar {
+        width: 150px;
     }
 }

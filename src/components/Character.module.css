@@ -139,7 +139,7 @@
 
 .neonText {
     color: var(--neon-cyan);
-    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+    text-shadow: 0 0 8px rgba(0, 243, 255, 0.3);
 }
 
 .statsGrid {
@@ -186,9 +186,9 @@
     left: 0;
     width: 100%;
     height: 100%;
-    border: 2px solid var(--neon-pink);
-    opacity: 0.2;
-    animation: glitch 2s infinite linear alternate;
+    border: 1px solid var(--neon-pink);
+    opacity: 0.15;
+    animation: glitch 4s infinite linear alternate;
 }
 
 @keyframes glitch {
@@ -260,6 +260,31 @@
     filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.3));
     position: relative;
     z-index: 1;
+    animation: imageGlow 3s ease-in-out infinite;
+    transform: translateZ(0);
+    will-change: filter;
+
+    /* Image Masking - Fades the bottom and edges */
+    mask-image: linear-gradient(to bottom,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 1) 70%,
+            rgba(0, 0, 0, 0) 100%);
+    -webkit-mask-image: linear-gradient(to bottom,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 1) 70%,
+            rgba(0, 0, 0, 0) 100%);
+}
+
+@keyframes imageGlow {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.3)) drop-shadow(0 0 40px rgba(255, 0, 127, 0.1));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 35px rgba(0, 243, 255, 0.5)) drop-shadow(0 0 60px rgba(255, 0, 127, 0.3));
+    }
 }
 
 /* Skills */
@@ -391,9 +416,30 @@
 
     .card {
         padding: 1.5rem;
+        transform: translateZ(0);
+        will-change: transform;
     }
 
     .sidePanel {
         gap: 1.5rem;
+    }
+
+    /* Disable heavy animations on mobile */
+    .glitchBox,
+    .scanline,
+    .circle {
+        animation: none !important;
+    }
+
+    .glitchBox {
+        display: none;
+    }
+
+    .circle {
+        opacity: 0.1;
+    }
+
+    .characterContainer {
+        height: 300px;
     }
 }

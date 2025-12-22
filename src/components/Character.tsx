@@ -1,10 +1,12 @@
 "use client";
 
 import styles from './Character.module.css';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, memo } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'framer-motion';
+import { useSound } from '@/hooks/useSound';
+import { useDeviceContext } from '@/hooks/useDeviceCapability';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,42 +17,59 @@ const skills = [
     { name: "3D WEB EXPERT", level: "80%", icon: "🧊" },
 ];
 
-export default function Character() {
-    const containerRef = useRef(null);
-    const skillRefs = useRef<HTMLDivElement[]>([]);
+// Isolated Terminal Component - Only this re-renders during typing
+const TerminalText = memo(function TerminalText({ typingSpeed }: { typingSpeed: number }) {
     const [terminalText, setTerminalText] = useState("");
-    const fullText = `> ACCESSING_ENCRYPTED_LOGS...
-> IDENTITY: IMDADUR_RAHMAN
-> ROLE: FLUTTER_ARCHITECT // NEXT.JS_NINJA
+    const { playSound } = useSound();
 
-[PROFILE_SUMMARY]
-I don't just build products; I architect scalable, future-proof digital assets. My philosophy is simple: Respect the process. Clean code and long-term maintainability are non-negotiable.
+    const fullText = `> ID: IMDADUR_RAHMAN
+> ROLE: ARCHITECT // NINJA
 
-[TECH_PHILOSOPHY]
-- Architecture > Haste
-- Performance > Flashy Overload
-- Debugging = Real Learning
+[SUMMARY]
+Architecting scalable digital assets.
+Clean code is my non-negotiable standard.
 
 [VISION]
-Breaching the gap between UI/UX clarity and 3D immersive web experimentation. 
+Clarifying UI/UX through 3D experimentation.
 
-> MISSION: TO_BUILD_THINGS_THAT_LAST.
 > GITHUB: github.com/imdadur765`;
 
     useEffect(() => {
         let i = 0;
         const interval = setInterval(() => {
             setTerminalText(fullText.slice(0, i));
+            if (fullText[i - 1] && fullText[i - 1] !== ' ' && fullText[i - 1] !== '\n') {
+                // playSound('typing');
+            }
             i++;
             if (i > fullText.length) clearInterval(interval);
-        }, 30);
+        }, typingSpeed); // Use dynamic typing speed
 
+        return () => clearInterval(interval);
+    }, [fullText, playSound, typingSpeed]);
+
+    return (
+        <p className={styles.bioText}>
+            {terminalText}
+            <span className={styles.cursor}>_</span>
+        </p>
+    );
+});
+
+export default function Character() {
+    const containerRef = useRef(null);
+    const skillRefs = useRef<HTMLDivElement[]>([]);
+    const { features, prefersReducedMotion } = useDeviceContext();
+
+    useEffect(() => {
         const ctx = gsap.context(() => {
             gsap.from(".statCard", {
                 y: 50,
                 opacity: 0,
                 duration: 1,
                 stagger: 0.2,
+                lazy: true,
+                force3D: true,
                 scrollTrigger: {
                     trigger: containerRef.current,
                     start: "top 70%",
@@ -63,6 +82,8 @@ Breaching the gap between UI/UX clarity and 3D immersive web experimentation.
                         width: skills[index].level,
                         duration: 2,
                         ease: "power4.out",
+                        lazy: true,
+                        force3D: true,
                         scrollTrigger: {
                             trigger: bar,
                             start: "top 90%",
@@ -72,10 +93,7 @@ Breaching the gap between UI/UX clarity and 3D immersive web experimentation.
             });
         }, containerRef);
 
-        return () => {
-            ctx.revert();
-            clearInterval(interval);
-        };
+        return () => ctx.revert();
     }, []);
 
     return (
@@ -103,10 +121,7 @@ Breaching the gap between UI/UX clarity and 3D immersive web experimentation.
                                 <span className={styles.cardIcon}>👤</span>
                                 <h3>PROFILE</h3>
                             </div>
-                            <p className={styles.bioText}>
-                                {terminalText}
-                                <span className={styles.cursor}>_</span>
-                            </p>
+                            <TerminalText typingSpeed={features.typingSpeed} />
                             <div className={styles.dataLine}>
                                 <span>LOCATION:</span>
                                 <span className={styles.neonText}>ASSAM, IN</span>
@@ -147,14 +162,16 @@ Breaching the gap between UI/UX clarity and 3D immersive web experimentation.
                             <div className={styles.circle} />
                             <img src="/character.png" alt="Identity" className={styles.characterImage} />
 
-                            <motion.div
-                                animate={{ y: [0, -10, 0] }}
-                                transition={{ repeat: Infinity, duration: 4 }}
-                                className={styles.floatingTag}
-                                style={{ top: '10%', right: '-10%' }}
-                            >
-                                [ AUTH_LEVEL: MASTER ]
-                            </motion.div>
+                            {features.floatingAnimations && !prefersReducedMotion && (
+                                <motion.div
+                                    animate={{ y: [0, -10, 0] }}
+                                    transition={{ repeat: Infinity, duration: 4 }}
+                                    className={styles.floatingTag}
+                                    style={{ top: '10%', right: '-10%' }}
+                                >
+                                    [ AUTH_LEVEL: MASTER ]
+                                </motion.div>
+                            )}
                         </div>
                     </div>
 

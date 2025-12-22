@@ -5,6 +5,7 @@ import styles from './Hero.module.css';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'framer-motion';
+import { useDeviceContext } from '@/hooks/useDeviceCapability';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,6 +14,7 @@ export default function Hero() {
     const containerRef = useRef<HTMLElement>(null);
     const titleContainerRef = useRef<HTMLDivElement>(null);
     const layerRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const { features, prefersReducedMotion } = useDeviceContext();
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -20,39 +22,98 @@ export default function Hero() {
         const titleContainer = titleContainerRef.current;
         if (!canvas || !container || !titleContainer) return;
 
+        // Skip heavy effects if reduced motion is preferred
+        if (prefersReducedMotion) return;
+
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        // Initialize per-layer magnetic setters
-        const layerSetters = layerRefs.current.map(layer => {
-            if (!layer) return null;
-            return {
-                x: gsap.quickTo(layer, "x", { duration: 0.6, ease: "power2.out" }),
-                y: gsap.quickTo(layer, "y", { duration: 0.6, ease: "power2.out" }),
-                rotateY: gsap.quickTo(layer, "rotateY", { duration: 0.8, ease: "power2.out" }),
-                rotateX: gsap.quickTo(layer, "rotateX", { duration: 0.8, ease: "power2.out" })
-            };
-        }).filter(Boolean);
+        // Lightweight magnetic effect for title (always enabled, uses CSS transforms only)
+        const titleMagnetic = {
+            x: gsap.quickTo(titleContainer, "x", { duration: 0.4, ease: "power2.out" }),
+            y: gsap.quickTo(titleContainer, "y", { duration: 0.4, ease: "power2.out" }),
+        };
+
+        // Only initialize heavy 3D effects if enabled
+        let layerSetters: any[] = [];
+        if (features.magnetic3D) {
+            layerSetters = layerRefs.current.map(layer => {
+                if (!layer) return null;
+                return {
+                    x: gsap.quickTo(layer, "x", { duration: 0.6, ease: "power2.out" }),
+                    y: gsap.quickTo(layer, "y", { duration: 0.6, ease: "power2.out" }),
+                    rotateY: gsap.quickTo(layer, "rotateY", { duration: 0.8, ease: "power2.out" }),
+                    rotateX: gsap.quickTo(layer, "rotateX", { duration: 0.8, ease: "power2.out" })
+                };
+            }).filter(Boolean);
+        }
 
         const handleMove = (x: number, y: number) => {
             const rect = container.getBoundingClientRect();
+            const titleRect = titleContainer.getBoundingClientRect();
+
             const mouseX = (x - rect.left) / rect.width;
             const mouseY = (y - rect.top) / rect.height;
 
-            const pullStrength = 80; // How far the text stretches
+            (window as any)._lastMouseX = x;
+            (window as any)._lastMouseY = y;
 
-            layerSetters.forEach((setter, index) => {
-                if (!setter) return;
-                // Deeper layers (index 0-3) move less, front layers (index 4-7) move more
-                const factor = (index / (layerSetters.length - 1)) * pullStrength;
+            const centerX = titleRect.left + titleRect.width / 2;
+            const centerY = titleRect.top + titleRect.height / 2;
+            const dist = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
 
-                setter.x((mouseX - 0.5) * factor);
-                setter.y((mouseY - 0.5) * factor);
+            // Lightweight magnetic effect - always active (attracts text to cursor)
+            const magnetLimit = 400;
+            if (dist < magnetLimit) {
+                const magnetStrength = 15; // Subtle but noticeable
+                titleMagnetic.x((mouseX - 0.5) * magnetStrength);
+                titleMagnetic.y((mouseY - 0.5) * magnetStrength);
+            }
 
-                // Keep some rotation for 3D feel
-                setter.rotateY((mouseX - 0.5) * 20);
-                setter.rotateX((mouseY - 0.5) * -20);
-            });
+            // Heavy 3D effects - only if enabled
+            if (features.magnetic3D) {
+                const pullStrength = 80;
+                const limit = 600;
+
+                layerSetters.forEach((setter, index) => {
+                    if (!setter) return;
+
+                    let targetX = 0;
+                    let targetY = 0;
+                    let targetRotY = 0;
+                    let targetRotX = 0;
+
+                    if (dist < limit) {
+                        const factor = (index / (layerSetters.length - 1)) * pullStrength;
+                        targetX = (mouseX - 0.5) * factor;
+                        targetY = (mouseY - 0.5) * factor;
+                        targetRotY = (mouseX - 0.5) * 20;
+                        targetRotX = (mouseY - 0.5) * -20;
+                    }
+
+                    setter.x(targetX);
+                    setter.y(targetY);
+                    setter.rotateY(targetRotY);
+                    setter.rotateX(targetRotX);
+                });
+            }
+        };
+
+        const handleMouseLeave = () => {
+            // Reset lightweight magnetic effect
+            titleMagnetic.x(0);
+            titleMagnetic.y(0);
+
+            // Reset heavy 3D effects if enabled
+            if (features.magnetic3D) {
+                layerSetters.forEach(setter => {
+                    if (!setter) return;
+                    setter.x(0);
+                    setter.y(0);
+                    setter.rotateY(0);
+                    setter.rotateX(0);
+                });
+            }
         };
 
         const handleMouseMove = (e: MouseEvent) => {
@@ -65,8 +126,8 @@ export default function Hero() {
             }
         };
 
-        // Canvas Particle Logic
-        let particles: any[] = [];
+        // Canvas Particle Logic - only if particles are enabled
+        let particles: Particle[] = [];
         let animationFrameId: number;
 
         const resize = () => {
@@ -86,6 +147,24 @@ export default function Hero() {
             }
             update() {
                 this.x += this.speedX; this.y += this.speedY;
+
+                // Only apply magnetic attraction if 3D effects are enabled
+                if (features.magnetic3D) {
+                    const mX = (window as any)._lastMouseX || 0;
+                    const mY = (window as any)._lastMouseY || 0;
+                    const dx = mX - this.x;
+                    const dy = mY - this.y;
+                    const distSq = dx * dx + dy * dy;
+                    const radiusSq = 300 * 300;
+
+                    if (distSq < radiusSq) {
+                        const dist = Math.sqrt(distSq);
+                        const force = (300 - dist) / 300;
+                        this.x += dx * force * 0.04;
+                        this.y += dy * force * 0.04;
+                    }
+                }
+
                 if (this.x > this.width) this.x = 0; else if (this.x < 0) this.x = this.width;
                 if (this.y > this.height) this.y = 0; else if (this.y < 0) this.y = this.height;
             }
@@ -98,7 +177,9 @@ export default function Hero() {
 
         const initCanvas = () => {
             particles = [];
-            for (let i = 0; i < 150; i++) particles.push(new Particle(canvas.width, canvas.height));
+            // Use dynamic particle count from device capability
+            const count = features.particleCount;
+            for (let i = 0; i < count; i++) particles.push(new Particle(canvas.width, canvas.height));
         };
 
         const animateCanvas = () => {
@@ -107,36 +188,44 @@ export default function Hero() {
             animationFrameId = requestAnimationFrame(animateCanvas);
         };
 
-        window.addEventListener('resize', resize);
+        // Always attach mouse events for lightweight magnetic effect
         window.addEventListener('mousemove', handleMouseMove);
+        container.addEventListener('mouseleave', handleMouseLeave);
         window.addEventListener('touchmove', handleTouchMove);
-        resize();
-        initCanvas();
-        animateCanvas();
+
+        // Set up canvas and particles if enabled
+        if (features.particles) {
+            window.addEventListener('resize', resize);
+            resize();
+            initCanvas();
+            animateCanvas();
+        }
 
         return () => {
             window.removeEventListener('resize', resize);
             window.removeEventListener('mousemove', handleMouseMove);
+            container.removeEventListener('mouseleave', handleMouseLeave);
             window.removeEventListener('touchmove', handleTouchMove);
-            cancelAnimationFrame(animationFrameId);
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
         };
-    }, []);
+    }, [features, prefersReducedMotion]);
 
     const name = "IMDADUR RAHMAN";
+    const layerCount = features.layerCount;
 
     return (
         <section className={styles.hero} ref={containerRef}>
-            <canvas ref={canvasRef} className={styles.canvas} />
+            {features.particles && <canvas ref={canvasRef} className={styles.canvas} />}
             <div className={styles.overlay} />
 
             <div className={styles.content}>
                 <div className={styles.titleWrapper} ref={titleContainerRef}>
-                    {/* 8-Layer Magnetic Extrusion Stack */}
-                    {[...Array(8)].map((_, i) => (
+                    {/* Dynamic layer count based on device capability */}
+                    {[...Array(layerCount)].map((_, i) => (
                         <div
                             key={i}
                             ref={el => { layerRefs.current[i] = el; }}
-                            className={`${styles.titleLayer} ${styles[`layer${i + 1}`]}`}
+                            className={`${styles.titleLayer} ${styles[`layer${i + 1}`]} ${i % 2 !== 0 ? styles.mobileHide : ''}`}
                         >
                             {name}
                         </div>
@@ -147,21 +236,45 @@ export default function Hero() {
                     className={styles.subtitle}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1, duration: 1 }}
+                    transition={{ delay: prefersReducedMotion ? 0 : 1, duration: prefersReducedMotion ? 0 : 1 }}
                 >
                     Creative Developer <span className={styles.dot}>•</span> Designer <span className={styles.dot}>•</span> Visionary
                 </motion.p>
 
+                {/* Under Construction Notice */}
+                <motion.div
+                    className={styles.constructionBanner}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: prefersReducedMotion ? 0 : 1.2, duration: prefersReducedMotion ? 0 : 0.5 }}
+                >
+                    <span className={styles.constructionIcon}>🚧</span>
+                    <span className={styles.constructionText}>UNDER CONSTRUCTION</span>
+                    <div className={styles.progressBar}>
+                        <div className={styles.progressFill} style={{ width: '30%' }} />
+                    </div>
+                    <span className={styles.progressText}>30% COMPLETE</span>
+                </motion.div>
+
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 1.5, duration: 1 }}
+                    transition={{ delay: prefersReducedMotion ? 0 : 1.5, duration: prefersReducedMotion ? 0 : 1 }}
                     className={styles.ctaWrapper}
                 >
                     <button className={styles.ctaButton}>
                         <span className={styles.ctaText}>Start Experience</span>
                         <div className={styles.ctaBlob} />
                     </button>
+                </motion.div>
+
+                <motion.div
+                    className={styles.systemAdvisory}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: prefersReducedMotion ? 0 : 1.8, duration: prefersReducedMotion ? 0 : 0.8 }}
+                >
+                    <span className={styles.advisoryHeader}>SYSTEM_ADVISORY //</span> This interface is a functional prototype. Architectural integrity: 30%. True custom engineering takes time I don&apos;t build fake, drag-and-drop WordPress templates. Expect deep-system upgrades in forthcoming cycles. Built for stability, destined for evolution.
                 </motion.div>
             </div>
 

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import styles from './Navbar.module.css';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { useSound } from '@/hooks/useSound';
 
 const navItems = [
     { name: 'Home', href: '/' },
@@ -14,6 +15,7 @@ const navItems = [
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const { playSound } = useSound();
 
     const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -55,15 +57,20 @@ export default function Navbar() {
 
                 {/* Desktop Links */}
                 <div className={styles.links}>
-                    <Link href="/" className={styles.link}>Home</Link>
-                    <Link href="#work" className={styles.link}>Missions</Link>
-                    <Link href="#about" className={styles.link}>Stats</Link>
-                    <Link href="/store" className={`${styles.link} ${styles.nav3D}`}>Black Market</Link>
-                    <Link href="#contact" className={styles.link}>Contact</Link>
+                    <Link href="/" className={styles.link} onMouseEnter={() => playSound('hover')} onClick={() => playSound('click')}>Home</Link>
+                    <Link href="#work" className={styles.link} onMouseEnter={() => playSound('hover')} onClick={() => playSound('click')}>Missions</Link>
+                    <Link href="#about" className={styles.link} onMouseEnter={() => playSound('hover')} onClick={() => playSound('click')}>Stats</Link>
+                    <Link href="/store" className={`${styles.link} ${styles.nav3D}`} onMouseEnter={() => playSound('hover')} onClick={() => playSound('click')}>Black Market</Link>
+                    <Link href="#contact" className={styles.link} onMouseEnter={() => playSound('hover')} onClick={() => playSound('click')}>Contact</Link>
                 </div>
 
                 {/* Hamburger Button */}
-                <button className={styles.hamburger} onClick={toggleMenu} aria-label="Toggle menu">
+                <button
+                    className={styles.hamburger}
+                    onClick={() => { toggleMenu(); playSound('click'); }}
+                    onMouseEnter={() => playSound('hover')}
+                    aria-label="Toggle menu"
+                >
                     <div className={styles.bar} style={{ transform: isOpen ? 'rotate(45deg)' : 'rotate(0)', transformOrigin: 'center' }} />
                     <div className={styles.bar} style={{ opacity: isOpen ? 0 : 1, transform: isOpen ? 'translateX(20px)' : 'translateX(0)' }} />
                     <div className={styles.bar} style={{ transform: isOpen ? 'rotate(-45deg)' : 'rotate(0)', transformOrigin: 'center' }} />
@@ -80,7 +87,7 @@ export default function Navbar() {
                         exit="closed"
                         variants={menuVariants}
                     >
-                        <button className={styles.closeButton} onClick={toggleMenu} aria-label="Close menu">
+                        <button className={styles.closeButton} onClick={() => { toggleMenu(); playSound('click'); }} aria-label="Close menu">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -92,7 +99,8 @@ export default function Navbar() {
                                 <Link
                                     href={item.href}
                                     className={styles.mobileLink}
-                                    onClick={toggleMenu}
+                                    onClick={() => { toggleMenu(); playSound('click'); }}
+                                    onMouseEnter={() => playSound('hover')}
                                 >
                                     {item.name}
                                 </Link>
@@ -102,7 +110,8 @@ export default function Navbar() {
                             <Link
                                 href="/store"
                                 className={`${styles.mobileLink} ${styles.nav3D}`}
-                                onClick={toggleMenu}
+                                onClick={() => { toggleMenu(); playSound('click'); }}
+                                onMouseEnter={() => playSound('hover')}
                                 style={{ color: 'var(--neon-pink)', textShadow: '0 0 10px var(--neon-pink)' }}
                             >
                                 BLACK MARKET
